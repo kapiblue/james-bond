@@ -11,14 +11,17 @@ library(HoRM)
 library(dplyr)
 library(knitr)
 library(DALEX)
+library(ggplot2)
 
 ```
 
 ## Getting the data
 
-```{r data}
+```{r dataprep}
 data(JamesBond)
-kable(JamesBond)
+df <- JamesBond %>% select(-US_Gross, -World_Gross, -Budget, -Avg_User_Rtn_Tom) %>%
+  relocate(Avg_User_IMDB, .after = last_col())
+kable(df)
 ```
 
 ## Including Plots
@@ -26,7 +29,11 @@ kable(JamesBond)
 You can also embed plots, for example:
 
 ```{r pressure, echo=FALSE}
-plot(pressure)
+g <- ggplot(JamesBond, aes(Martinis, Movie)) + geom_point()
+g
 ```
+
+
+
 
 Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
