@@ -24,7 +24,7 @@ set.seed(007)
 
 ```{r dataprep}
 data(JamesBond)
-df <- JamesBond %>% select(-Movie, -US_Gross, -World_Gross, -Budget, -Avg_User_Rtn_Tom) %>%
+df <- JamesBond %>% select(-US_Gross, -World_Gross, -US_Adj, -Budget, -Avg_User_Rtn_Tom) %>%
   relocate(Avg_User_IMDB, .after = last_col())
 kable(df)
 ```
@@ -33,11 +33,17 @@ kable(df)
 
 You can also embed plots, for example:
 
-```{r pressure, echo=FALSE}
+```{r martinis, echo=FALSE}
 g <- ggplot(JamesBond, aes(Martinis, Movie)) + geom_point()
 g
 
-JamesBond %>% select(Year, Martinis, US_Adj) %>%  cor() %>% corrplot()
+```
+
+```{r corr}
+
+df %>% select(-Movie, -Bond,) %>%
+  cor()%>% 
+  corrplot()
 ```
 
 ```{r automldef}
@@ -46,7 +52,7 @@ h2o.init()
 
 h2o.no_progress()
 target <- "Avg_User_IMDB"
-df <- as.h2o(df)
+df <- df %>% select(-Movie, -Bond) %>% as.h2o()
 
 
 
@@ -64,21 +70,15 @@ head(leader_board)
 ```{r caret}
 
 data(JamesBond)
-df <- JamesBond %>% select(-Movie, -US_Gross, -World_Gross, -Budget, -Avg_User_Rtn_Tom) %>%
+df <- JamesBond %>% select(-Movie, -US_Gross, -World_Gross, -US_Adj, -Budget, -Avg_User_Rtn_Tom) %>%
   relocate(Avg_User_IMDB, .after = last_col())
 
 train_control <- trainControl(method = "cv", number = 8, savePredictions = "all")
 
 model_rf <- train(Avg_User_IMDB~. , data = df, method = "rf", ntree = 100, trControl = train_control)
-model_gbm <- train(Avg_User_IMDB~. , data = df, method = "gbm", trControl = train_control)
 
-explainer_rf <- DALEX::explain(model = model,
+explainer_rf <- DALEX::explain(model = model_rf,
                               label = "rf",
-                              verbose = FALSE,
-                              y = df$Avg_User_IMDB
-                              )
-explainer_rf <- DALEX::explain(model = model,
-                              label = "gbm",
                               verbose = FALSE,
                               y = df$Avg_User_IMDB
                               )
@@ -86,10 +86,20 @@ explainer_rf <- DALEX::explain(model = model,
 print(model_performance(explainer_rf))
 
 
-plot(model_parts(explainer_rf, loss_function = loss_root_mean_square), model_parts(explainer_gbm, loss_function = loss_root_mean_square))
+plot(model_parts(explainer_rf, loss_function = loss_root_mean_square))
 ```
+```{r breakdown}
+no_time_to_die <- t(c(2021, "Daniel Craig", 608510000, 214930000, 163, 0, 1, 1, 66, 109, 1, 0))
+colnames(no_time_to_die)<- colnames(df)
+rbind(df, no_time_to_die)
 
+predict(explainer_rf, no_time_to_die)
+```
 Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
 
-https://youtu.be/2oZdJrph3RA
+## Resources
+
+James Bond R dataset https://search.r-project.org/CRAN/refmans/HoRM/html/JamesBond.html
+
+Daniel Craig's retrospective https://youtu.be/2oZdJrph3RA
 
