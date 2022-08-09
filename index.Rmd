@@ -2,24 +2,27 @@
 title: "James Bond"
 author: "Kacper Dobek"
 date: "2022-08-08"
-output: html_document
+output: 
+    html_document:
+        css: "resources/style.css"
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE, cache = TRUE)
 library(HoRM)
 library(dplyr)
 library(knitr)
 library(DALEX)
+library(h2o)
 library(ggplot2)
-
+set.seed(007)
 ```
 
 ## Getting the data
 
 ```{r dataprep}
 data(JamesBond)
-df <- JamesBond %>% select(-US_Gross, -World_Gross, -Budget, -Avg_User_Rtn_Tom) %>%
+df <- JamesBond %>% select(-Movie, -US_Gross, -World_Gross, -Budget, -Avg_User_Rtn_Tom) %>%
   relocate(Avg_User_IMDB, .after = last_col())
 kable(df)
 ```
@@ -33,7 +36,28 @@ g <- ggplot(JamesBond, aes(Martinis, Movie)) + geom_point()
 g
 ```
 
+```{r automldef}
+
+h2o.init()
+
+h2o.no_progress()
+target <- "Avg_User_IMDB"
+df <- as.h2o(df)
 
 
+
+```
+
+
+```{r automlmod}
+
+model <- h2o.automl(y= target, training_frame = df, max_runtime_secs = 30, max_models = 5, nfolds = 10)
+leader_board <- h2o.get_leaderboard(model)
+head(leader_board)
+
+```
 
 Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+https://youtu.be/2oZdJrph3RA
+

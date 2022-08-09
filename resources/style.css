@@ -1,0 +1,7 @@
+@font-face {
+  font-family: Goldeneye
+  src: url(007Goldeneye.ttf)
+}
+body {
+  font-family: Goldeneye;
+}
