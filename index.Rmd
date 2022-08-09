@@ -1,5 +1,5 @@
 ---
-title: "James Bond"
+title: "WHAT MAKES A GREAT JAMES BOND MOVIE?"
 author: "Kacper Dobek"
 date: "2022-08-08"
 output: 
@@ -13,8 +13,10 @@ library(HoRM)
 library(dplyr)
 library(knitr)
 library(DALEX)
+library(caret)
 library(h2o)
 library(ggplot2)
+library(corrplot)
 set.seed(007)
 ```
 
@@ -34,6 +36,8 @@ You can also embed plots, for example:
 ```{r pressure, echo=FALSE}
 g <- ggplot(JamesBond, aes(Martinis, Movie)) + geom_point()
 g
+
+JamesBond %>% select(Year, Martinis, US_Adj) %>%  cor() %>% corrplot()
 ```
 
 ```{r automldef}
@@ -55,6 +59,34 @@ model <- h2o.automl(y= target, training_frame = df, max_runtime_secs = 30, max_m
 leader_board <- h2o.get_leaderboard(model)
 head(leader_board)
 
+```
+
+```{r caret}
+
+data(JamesBond)
+df <- JamesBond %>% select(-Movie, -US_Gross, -World_Gross, -Budget, -Avg_User_Rtn_Tom) %>%
+  relocate(Avg_User_IMDB, .after = last_col())
+
+train_control <- trainControl(method = "cv", number = 8, savePredictions = "all")
+
+model_rf <- train(Avg_User_IMDB~. , data = df, method = "rf", ntree = 100, trControl = train_control)
+model_gbm <- train(Avg_User_IMDB~. , data = df, method = "gbm", trControl = train_control)
+
+explainer_rf <- DALEX::explain(model = model,
+                              label = "rf",
+                              verbose = FALSE,
+                              y = df$Avg_User_IMDB
+                              )
+explainer_rf <- DALEX::explain(model = model,
+                              label = "gbm",
+                              verbose = FALSE,
+                              y = df$Avg_User_IMDB
+                              )
+
+print(model_performance(explainer_rf))
+
+
+plot(model_parts(explainer_rf, loss_function = loss_root_mean_square), model_parts(explainer_gbm, loss_function = loss_root_mean_square))
 ```
 
 Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
