@@ -89,11 +89,16 @@ print(model_performance(explainer_rf))
 plot(model_parts(explainer_rf, loss_function = loss_root_mean_square))
 ```
 ```{r breakdown}
-no_time_to_die <- t(c(2021, "Daniel Craig", 608510000, 214930000, 163, 0, 1, 1, 66, 109, 1, 0))
-colnames(no_time_to_die)<- colnames(df)
-rbind(df, no_time_to_die)
+no_time_to_die <- data.frame(2021, "Daniel Craig", 608510000, 214930000, 163, 0, 1, 1, 66, 109, 1, 0)
+colnames(no_time_to_die) <- colnames(df)
+df <- rbind(df, no_time_to_die)
 
-predict(explainer_rf, no_time_to_die)
+kable(no_time_to_die)
+
+predict(explainer_rf, tail(df, n=1))
+
+pb = predict_parts(explainer = explainer_rf, tail(df, n=1), type= "break_down")
+plot(pb)
 ```
 Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
 
