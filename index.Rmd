@@ -8,8 +8,7 @@ output:
         code_folding: hide
         code_download: true
         toc: true
-        fig_width: 16
-        fig_height: 10
+        out_width: 80%
         
 ---
 
@@ -37,7 +36,6 @@ set.seed(007)
 data(JamesBond)
 df <- JamesBond %>% select(-US_Gross, -World_Gross, -US_Adj, -Budget, -Avg_User_Rtn_Tom) %>%
   relocate(Avg_User_IMDB, .after = last_col())
-kable(df)
 ```
 
 I will be using the James Bond dataset from the HoRM package. [See resources](#Resources)\
@@ -62,7 +60,7 @@ kable(df)
 ## 2. Stats: Live and let die
 
 
-```{r martinis, echo=FALSE}
+```{r martinis, echo=FALSE, fig.width= 14, fig.height= 8}
 plot_df <- JamesBond
 plot_df$Movie <- factor (plot_df$Movie , levels = plot_df$Movie) # we want to preserve the dataframe's chronological movieordering
 
@@ -124,7 +122,6 @@ predict(explainer_rf, tail(df, n=1))
 pb = predict_parts(explainer = explainer_rf, tail(df, n=1), type= "break_down")
 plot(pb)
 ```
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
 
 ## Resources
 
