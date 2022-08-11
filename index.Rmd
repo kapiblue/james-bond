@@ -23,7 +23,15 @@ library(corrplot)
 set.seed(007)
 ```
 
+## Introduction
+
+Whether this is a great number or peculiar gadgets or glasses of cold vodka Martni, there are definitely many aspects constituting a great James Bond movie. Having watched *A spy who loved me (1977)* recently I've begun to wonder if that could be somehow assessed by the help of machine learning. This is my small summer data science project that aims to predict the average IMDB score for the newest 007 movie *No time to die* and see what contributes to the score.
+
+More formally, we will be looking at a regression problem for a small dataset (24 items) and training a random forest using cross validation. Then we will examine the breakdown plot for the previously unseen example - the new movie. I will be using *caret* package for the model and *DALEX* for explanation.
+
 ## 1. The data: For your eyes only
+
+
 
 
 ```{r dataprep, fig.width = 12}

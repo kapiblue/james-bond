@@ -1,13 +1,16 @@
-@font-face {
-  font-family: Goldeneye
-  src: url(007Goldeneye.ttf)
-}
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans&display=swap');
 body {
-  font-family: Goldeneye;
+  font-family: 'Open Sans', sans-serif;
   font-size: 16px;
   margin-left: none;
 }
 .main-container {
   margin-left: 250px !important;
   margin-right: auto;
+}
+h1, h2, h3 {
+  font-weight: bold;
+}
+h1.title {
+  padding-top: 50px;
 }
