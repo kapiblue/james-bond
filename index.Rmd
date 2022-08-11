@@ -8,6 +8,8 @@ output:
         code_folding: hide
         code_download: true
         toc: true
+        fig_width: 16
+        fig_height: 10
         
 ---
 
@@ -25,29 +27,60 @@ set.seed(007)
 
 ## Introduction
 
-Whether this is a great number or peculiar gadgets or glasses of cold vodka Martni, there are definitely many aspects constituting a great James Bond movie. Having watched *A spy who loved me (1977)* recently I've begun to wonder if that could be somehow assessed by the help of machine learning. This is my small summer data science project that aims to predict the average IMDB score for the newest 007 movie *No time to die* and see what contributes to the score.
+> Whether this is a great number or peculiar gadgets or glasses of cold vodka Martni, there are definitely many aspects constituting a great James Bond movie. Having watched *A spy who loved me (1977)* recently I've begun to wonder if that could be somehow assessed by the help of machine learning. This is my small summer data science project that aims to predict the average IMDB score for the newest 007 movie *No time to die* and see what contributes to the score.
 
-More formally, we will be looking at a regression problem for a small dataset (24 items) and training a random forest using cross validation. Then we will examine the breakdown plot for the previously unseen example - the new movie. I will be using *caret* package for the model and *DALEX* for explanation.
+> More formally, we will be looking at a regression problem for a small dataset (24 items) and training a random forest using cross validation. Then we will examine the breakdown plot for a previously unseen example - the new movie. I will be using *caret* package for the model and *DALEX* for explanation.
 
 ## 1. The data: For your eyes only
 
-
-
-
-```{r dataprep, fig.width = 12}
+```{r dataprep}
 data(JamesBond)
 df <- JamesBond %>% select(-US_Gross, -World_Gross, -US_Adj, -Budget, -Avg_User_Rtn_Tom) %>%
   relocate(Avg_User_IMDB, .after = last_col())
 kable(df)
 ```
 
-## Including Plots
+I will be using the James Bond dataset from the HoRM package. [See resources](#Resources)\
+Here we have the data of the previous 24 movies. I'm going to use 12 ouf of the 18 available features, namely: `r colnames(df)`.\
+To clear out the feature names:\
+- **World_Adj** The film's 2013-adjusted worldwide gross (in 1000's of U.S. dollars).\
+- **Budget_Adj** The film's 2013-adjusted budget (in 1000's of U.S. dollars).\
+- **Avg_User_IMDB** The average user rating on IMDB (www.imdb.com).\
+- **Conquests** The number of "conquests" by Bond in the film.\
+- **Martinis** The number of martinis Bond drank in the film.\
+- **BJB** The number of times Bond stated "Bond. James Bond." in the movie.\
+- **Kills_Bond** The number of people killed by Bond.\
+- **Kills_Others** The number of people killed in the film by people other than Bond.\
+- **Top_100** An indicator where a value of 1 means the title song within the top 100 on the UK Singles Chart and the U.S. Billboard Hot 100 and a value of 0 means it did not.\
 
-You can also embed plots, for example:
+
+
+```{r table, fig.width = 12}
+kable(df)
+```
+
+## 2. Stats: Live and let die
+
 
 ```{r martinis, echo=FALSE}
-g <- ggplot(JamesBond, aes(Martinis, Movie)) + geom_point()
-g
+plot_df <- JamesBond
+plot_df$Movie <- factor (plot_df$Movie , levels = plot_df$Movie) # we want to preserve the dataframe's chronological movieordering
+
+
+g <- ggplot(plot_df, aes(Movie, Martinis, group = 1)) + geom_line(size = 1.5) + geom_point(size = 5) +
+  labs(
+    title = "The number of Martinis Bond drank in the film"
+  )
+  
+style <- theme_classic() +
+  theme(
+    axis.text.x = element_text(angle = 35, margin = margin(t=50)),
+    text = element_text(size = 20),
+    axis.title = element_text(size = 20),
+    plot.title = element_text(size = 24, face = "bold", hjust = 0.5),
+    panel.grid.major.x = element_line(colour = 'grey', linetype = 'dashed'))
+
+g + style 
 
 ```
 
