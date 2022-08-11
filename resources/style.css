@@ -4,4 +4,10 @@
 }
 body {
   font-family: Goldeneye;
+  font-size: 16px;
+  margin-left: none;
+}
+.main-container {
+  margin-left: 250px !important;
+  margin-right: auto;
 }

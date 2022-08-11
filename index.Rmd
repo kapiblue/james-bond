@@ -5,6 +5,10 @@ date: "2022-08-08"
 output: 
     html_document:
         css: "resources/style.css"
+        code_folding: hide
+        code_download: true
+        toc: true
+        
 ---
 
 ```{r setup, include=FALSE}
@@ -14,15 +18,15 @@ library(dplyr)
 library(knitr)
 library(DALEX)
 library(caret)
-library(h2o)
 library(ggplot2)
 library(corrplot)
 set.seed(007)
 ```
 
-## Getting the data
+## 1. The data: For your eyes only
 
-```{r dataprep}
+
+```{r dataprep, fig.width = 12}
 data(JamesBond)
 df <- JamesBond %>% select(-US_Gross, -World_Gross, -US_Adj, -Budget, -Avg_User_Rtn_Tom) %>%
   relocate(Avg_User_IMDB, .after = last_col())
@@ -42,29 +46,8 @@ g
 ```{r corr}
 
 df %>% select(-Movie, -Bond,) %>%
-  cor()%>% 
+  cor() %>% 
   corrplot()
-```
-
-```{r automldef}
-
-h2o.init()
-
-h2o.no_progress()
-target <- "Avg_User_IMDB"
-df <- df %>% select(-Movie, -Bond) %>% as.h2o()
-
-
-
-```
-
-
-```{r automlmod}
-
-model <- h2o.automl(y= target, training_frame = df, max_runtime_secs = 30, max_models = 5, nfolds = 10)
-leader_board <- h2o.get_leaderboard(model)
-head(leader_board)
-
 ```
 
 ```{r caret}
