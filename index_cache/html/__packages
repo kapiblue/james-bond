@@ -7,3 +7,4 @@ ggplot2
 lattice
 caret
 corrplot
+plotly

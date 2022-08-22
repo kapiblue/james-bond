@@ -21,6 +21,7 @@ library(DALEX)
 library(caret)
 library(ggplot2)
 library(corrplot)
+library(plotly)
 set.seed(007)
 ```
 
@@ -60,26 +61,36 @@ kable(df)
 ## 2. Stats: Live and let die
 
 
-```{r martinis, echo=FALSE, fig.width= 14, fig.height= 8}
+```{r martinis, fig.width= 14, fig.height= 7}
 plot_df <- JamesBond
 plot_df$Movie <- factor (plot_df$Movie , levels = plot_df$Movie) # we want to preserve the dataframe's chronological movieordering
 
+m <- list(
+  l = 100,
+  r = 50,
+  b = 80,
+  t = 150,
+  pad = 2
+)
 
-g <- ggplot(plot_df, aes(Movie, Martinis, group = 1)) + geom_line(size = 1.5) + geom_point(size = 5) +
-  labs(
-    title = "The number of Martinis Bond drank in the film"
-  )
-  
-style <- theme_classic() +
-  theme(
-    axis.text.x = element_text(angle = 35, margin = margin(t=50)),
-    text = element_text(size = 20),
-    axis.title = element_text(size = 20),
-    plot.title = element_text(size = 24, face = "bold", hjust = 0.5),
-    panel.grid.major.x = element_line(colour = 'grey', linetype = 'dashed'))
-
-g + style 
-
+fig <- plot_ly(plot_df, x = ~Year, y = ~Martinis, type= 'scatter', mode= 'lines+markers',
+               line = list(color = 'rgba(49,130,189, 1)', width = 4),
+               marker = list(color = 'rgba(49,130,189, 1)', size = 12),
+               hoverinfo = 'text',
+               text = ~paste(Movie, Year)) %>%
+  layout(title = "The number of Martini drinks Bond consumed in the movie",
+         font=list(size = 20),
+         margin = m,
+         xaxis = list(
+           showgrid = FALSE,
+           zeroline = FALSE,
+           tickfont = list(size = 16)
+         ),
+         yaxis = list(
+           showgrid = FALSE,
+           zeroline = TRUE 
+         ))
+fig
 ```
 
 ```{r corr}
