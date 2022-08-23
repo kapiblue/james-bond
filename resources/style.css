@@ -28,13 +28,13 @@ table {
   padding-bottom: 20px;
 }
 tr.even {
-  background-color: #ddd !important;
+  background-color: #ddd;
 }
 th:last-child, td:last-child {
-  background-color: #800 !important;
-  color: white !important;
+  background-color: #CD5C5C;
+  color: white;
 }
 img {
-  padding-top: 20px !important;
-  padding-bottom: 20px !important;
+  padding-top: 20px;
+  padding-bottom: 20px;
 }
