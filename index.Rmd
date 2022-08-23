@@ -25,6 +25,10 @@ library(plotly)
 set.seed(007)
 ```
 
+```{r img, echo=FALSE}
+knitr::include_graphics('resources/007.png')
+```
+
 ## Introduction
 
 > Whether this is a great number or peculiar gadgets or glasses of cold vodka Martni, there are definitely many aspects constituting a great James Bond movie. Having watched *A spy who loved me (1977)* recently I've begun to wonder if that could be somehow assessed by the help of machine learning. This is my small summer data science project that aims to predict the average IMDB score for the newest 007 movie *No time to die* and see what contributes to the score.
@@ -195,6 +199,8 @@ James Bond R dataset https://search.r-project.org/CRAN/refmans/HoRM/html/JamesBo
 How to use DALEX with caret https://htmlpreview.github.io/?https://github.com/ModelOriented/DALEX-docs/blob/master/vignettes/DALEX_caret.html
 
 R Markdown Cookbook https://bookdown.org/yihui/rmarkdown-cookbook/
+
+EMA book https://ema.drwhy.ai/
 
 Daniel Craig's retrospective https://youtu.be/2oZdJrph3RA
 

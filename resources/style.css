@@ -25,3 +25,14 @@ p {
 table {
   white-space: nowrap;
 }
+tr.even {
+  background-color: #ddd;
+}
+th:last-child, td:last-child {
+  background-color: #800;
+  color: white;
+}
+img {
+  padding-top: 20px;
+  padding-bottom: 20px;
+}
