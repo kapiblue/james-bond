@@ -92,6 +92,34 @@ fig <- plot_ly(plot_df, x = ~Year, y = ~Martinis, type= 'scatter', mode= 'lines+
          ))
 fig
 ```
+Look at another chart: 
+
+```{r kills, fig.width= 14, fig.height= 8}
+
+fig <- plot_ly(plot_df, x = ~Year, y = ~Kills_Bond, name = 'Kills Bond', type= 'scatter', mode= 'lines+markers',
+               line = list(color = 'rgba(49,130,189, 1)', width = 4),
+               marker = list(color = 'rgba(49,130,189, 1)', size = 12),
+               hoverinfo = 'text',
+               text = ~paste(Movie, Year)) %>%
+  add_trace(y = ~Kills_Others,  type = 'scatter', mode= 'lines+markers',
+               name = "Kills Others",
+               line = list(color = 'rgba(49,45,129, 1)', width = 4),
+               marker = list(color = 'rgba(49,45,129, 1)', size = 12)) %>%
+  layout(title = "The number of kills",
+         font=list(size = 20),
+         margin = m,
+         xaxis = list(
+           showgrid = FALSE,
+           zeroline = FALSE,
+           tickfont = list(size = 16)
+         ),
+         yaxis = list(
+           showgrid = FALSE,
+           zeroline = TRUE 
+         ))
+fig
+```
+
 
 ```{r corr}
 
