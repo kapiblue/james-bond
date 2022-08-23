@@ -7,9 +7,11 @@ body {
 .main-container {
   margin-left: 250px !important;
   margin-right: auto;
+  margin-bottom: 250px;
 }
 h1, h2, h3 {
   padding-top: 20px;
+  padding-bottom: 30px;
   font-weight: bold;
   font-size: 26px;
 }

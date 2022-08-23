@@ -1,7 +1,7 @@
 ---
 title: "WHAT MAKES A GREAT JAMES BOND MOVIE?"
 author: "Kacper Dobek"
-date: "2022-08-08"
+date: "2022-08-23"
 output: 
     html_document:
         css: "resources/style.css"
@@ -13,7 +13,7 @@ output:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, include = TRUE, cache = TRUE)
+knitr::opts_chunk$set(echo = TRUE, include = TRUE, cache = FALSE)
 library(HoRM)
 library(dplyr)
 library(knitr)
@@ -58,10 +58,11 @@ To clear out the feature names:\
 kable(df)
 ```
 
-## 2. Stats: Live and let die
+## 2. Charts: Live and let die
 
+In this section we will look at some interesting features. Hover over the bullet marker to get extra information about the movie.
 
-```{r martinis, fig.width= 14, fig.height= 7}
+```{r martinis, fig.width= 12, fig.height= 7}
 plot_df <- JamesBond
 plot_df$Movie <- factor (plot_df$Movie , levels = plot_df$Movie) # we want to preserve the dataframe's chronological movie ordering
 
@@ -94,20 +95,20 @@ fig
 ```
 
 
-```{r kills, fig.width= 14, fig.height= 8, plotly=TRUE}
+```{r kills, fig.width= 12, fig.height= 8}
 
 plot_df <- JamesBond
 plot_df$Movie <- factor (plot_df$Movie , levels = plot_df$Movie) # we want to preserve the dataframe's chronological movie ordering
 
-fig2 <- plot_ly(plot_df, x = ~Year, y = ~Kills_Bond, name = 'Kills Bond', type= 'scatter', mode= 'lines+markers',
+fig2 <- plot_ly(plot_df, x = ~Year, y = ~Kills_Bond, name = 'By Bond', type= 'scatter', mode= 'lines+markers',
                line = list(color = 'rgba(102,0,0,1)', width = 4),
                marker = list(color = 'rgba(102,0,0,1)', size = 12),
                hoverinfo = 'text',
                text = ~paste(Movie, Year)) %>%
   add_trace(y = ~Kills_Others,  type = 'scatter', mode= 'lines+markers',
-               name = "Kills Others",
-               line = list(color = 'rgba(49,45,129, 1)', width = 4),
-               marker = list(color = 'rgba(49,45,129, 1)', size = 12)) %>%
+               name = "By Others",
+               line = list(color = 'middle gray', width = 4),
+               marker = list(color = 'middle gray', size = 12)) %>%
   layout(title = "The number of kills",
          font=list(size = 20),
          margin = m,
@@ -117,26 +118,34 @@ fig2 <- plot_ly(plot_df, x = ~Year, y = ~Kills_Bond, name = 'Kills Bond', type= 
            tickfont = list(size = 16)
          ),
          yaxis = list(
+           title.text = '',
            showgrid = FALSE,
            zeroline = TRUE
          ))
 fig2
 ```
-```{r corr, fig.width = 14, fig.height = 8, warning=FALSE}
+The most correlated feature with the average IMDB score is the World gross, which should be expected. It is interesting to note that Kills, Film Length and Budget are growing with Year.
+
+```{r corr, fig.width = 18, fig.height = 12, warning=FALSE}
 
 fig_corr <- JamesBond %>% select(-US_Gross, -World_Gross, -US_Adj, -Budget, -Avg_User_Rtn_Tom, -Movie, -Bond) %>%
   relocate(Avg_User_IMDB, .after = last_col()) %>%
   cor() %>% 
-  ggcorrplot(method = 'circle', type = 'upper', outline.color = 'white', lab_size = 8,
+  ggcorrplot(method = 'square', type = 'upper', outline.color = 'white', lab_size = 8,
              title= "Feature Correlations",
              legend.title = "Corelation",
-             tl.cex = 18) +
+             tl.cex = 18,
+             lab=TRUE) +
   theme( text = element_text(size = 22))
 
 fig_corr
 ```
 
-```{r caret}
+## 3. Regression: The world is not enough
+
+It is time to train our regressor. We will use random forest with cross-validation. Next, we will create a DALEX explainer to examine the Feature Importance.
+
+```{r caret, fig.width = 10, fig.height= 7, out.width='100%'}
 
 data(JamesBond)
 df <- JamesBond %>% select(-Movie, -US_Gross, -World_Gross, -US_Adj, -Budget, -Avg_User_Rtn_Tom) %>%
@@ -155,9 +164,14 @@ explainer_rf <- DALEX::explain(model = model_rf,
 print(model_performance(explainer_rf))
 
 
-plot(model_parts(explainer_rf, loss_function = loss_root_mean_square))
+plot(model_parts(explainer_rf, loss_function = loss_root_mean_square)) + theme(text = element_text(size = 20))
 ```
-```{r breakdown}
+
+## 4. Break down: No time to die 
+
+I found the necessary statistics from *No time to die (2021)*. As some were hard to find, I assumed the values of Martinis and BJBs.The gross and budget were adjusted to 2013 for consistency:
+
+```{r breakdown, fig.width = 10, fig.height= 7, out.width='100%'}
 no_time_to_die <- data.frame(2021, "Daniel Craig", 608510000, 214930000, 163, 0, 1, 1, 66, 109, 1, 0)
 colnames(no_time_to_die) <- colnames(df)
 df <- rbind(df, no_time_to_die)
@@ -170,9 +184,17 @@ pb = predict_parts(explainer = explainer_rf, tail(df, n=1), type= "break_down")
 plot(pb)
 ```
 
-## Resources
+> We can examine the contribution of each feature of our example, the 25th 007 movie. In fact, we are very close to the true average IMDB rating! (https://www.imdb.com/title/tt2382320/, August 2022). 
+
+Please note that we used a very small dataset.
+
+## 5. Resources
 
 James Bond R dataset https://search.r-project.org/CRAN/refmans/HoRM/html/JamesBond.html
+
+How to use DALEX with caret https://htmlpreview.github.io/?https://github.com/ModelOriented/DALEX-docs/blob/master/vignettes/DALEX_caret.html
+
+R Markdown Cookbook https://bookdown.org/yihui/rmarkdown-cookbook/
 
 Daniel Craig's retrospective https://youtu.be/2oZdJrph3RA
 
