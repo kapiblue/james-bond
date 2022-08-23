@@ -13,14 +13,14 @@ output:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, cache = TRUE)
+knitr::opts_chunk$set(echo = TRUE, include = TRUE, cache = TRUE)
 library(HoRM)
 library(dplyr)
 library(knitr)
 library(DALEX)
 library(caret)
 library(ggplot2)
-library(corrplot)
+library(ggcorrplot)
 library(plotly)
 set.seed(007)
 ```
@@ -63,7 +63,7 @@ kable(df)
 
 ```{r martinis, fig.width= 14, fig.height= 7}
 plot_df <- JamesBond
-plot_df$Movie <- factor (plot_df$Movie , levels = plot_df$Movie) # we want to preserve the dataframe's chronological movieordering
+plot_df$Movie <- factor (plot_df$Movie , levels = plot_df$Movie) # we want to preserve the dataframe's chronological movie ordering
 
 m <- list(
   l = 100,
@@ -92,13 +92,16 @@ fig <- plot_ly(plot_df, x = ~Year, y = ~Martinis, type= 'scatter', mode= 'lines+
          ))
 fig
 ```
-Look at another chart: 
 
-```{r kills, fig.width= 14, fig.height= 8}
 
-fig <- plot_ly(plot_df, x = ~Year, y = ~Kills_Bond, name = 'Kills Bond', type= 'scatter', mode= 'lines+markers',
-               line = list(color = 'rgba(49,130,189, 1)', width = 4),
-               marker = list(color = 'rgba(49,130,189, 1)', size = 12),
+```{r kills, fig.width= 14, fig.height= 8, plotly=TRUE}
+
+plot_df <- JamesBond
+plot_df$Movie <- factor (plot_df$Movie , levels = plot_df$Movie) # we want to preserve the dataframe's chronological movie ordering
+
+fig2 <- plot_ly(plot_df, x = ~Year, y = ~Kills_Bond, name = 'Kills Bond', type= 'scatter', mode= 'lines+markers',
+               line = list(color = 'rgba(102,0,0,1)', width = 4),
+               marker = list(color = 'rgba(102,0,0,1)', size = 12),
                hoverinfo = 'text',
                text = ~paste(Movie, Year)) %>%
   add_trace(y = ~Kills_Others,  type = 'scatter', mode= 'lines+markers',
@@ -115,17 +118,22 @@ fig <- plot_ly(plot_df, x = ~Year, y = ~Kills_Bond, name = 'Kills Bond', type= '
          ),
          yaxis = list(
            showgrid = FALSE,
-           zeroline = TRUE 
+           zeroline = TRUE
          ))
-fig
+fig2
 ```
+```{r corr, fig.width = 14, fig.height = 8, warning=FALSE}
 
-
-```{r corr}
-
-df %>% select(-Movie, -Bond,) %>%
+fig_corr <- JamesBond %>% select(-US_Gross, -World_Gross, -US_Adj, -Budget, -Avg_User_Rtn_Tom, -Movie, -Bond) %>%
+  relocate(Avg_User_IMDB, .after = last_col()) %>%
   cor() %>% 
-  corrplot()
+  ggcorrplot(method = 'circle', type = 'upper', outline.color = 'white', lab_size = 8,
+             title= "Feature Correlations",
+             legend.title = "Corelation",
+             tl.cex = 18) +
+  theme( text = element_text(size = 22))
+
+fig_corr
 ```
 
 ```{r caret}

@@ -8,3 +8,4 @@ lattice
 caret
 corrplot
 plotly
+ggcorrplot
