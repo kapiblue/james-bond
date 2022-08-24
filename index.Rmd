@@ -13,7 +13,7 @@ output:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, include = TRUE, cache = FALSE)
+knitr::opts_chunk$set(echo = TRUE, include = TRUE, cache = TRUE)
 library(HoRM)
 library(dplyr)
 library(knitr)
@@ -101,7 +101,7 @@ fig
 ```{r kills, fig.width= 12, fig.height= 8}
 
 plot_df <- JamesBond
-plot_df$Movie <- factor (plot_df$Movie , levels = plot_df$Movie) # we want to preserve the dataframe's chronological movie ordering
+plot_df$Movie <- factor (plot_df$Movie , levels = plot_df$Movie)
 
 fig2 <- plot_ly(plot_df, x = ~Year, y = ~Kills_Bond, name = 'By Bond', type= 'scatter', mode= 'lines+markers',
                line = list(color = 'rgba(166,4,4,1)', width = 4),
@@ -129,7 +129,7 @@ fig2 <- plot_ly(plot_df, x = ~Year, y = ~Kills_Bond, name = 'By Bond', type= 'sc
          ))
 fig2
 ```
-The most correlated feature with the average IMDB score is the World gross, which should be expected. It is interesting to note that Kills, Film Length and Budget are growing with Year.
+The most correlated feature with the average IMDB score is the World gross, which should be expected. It is interesting to note that Kills, Film Length and Budget are growing in the newer movies. 
 
 ```{r corr, fig.width = 18, fig.height = 12, warning=FALSE}
 
@@ -174,7 +174,7 @@ plot(model_parts(explainer_rf, loss_function = loss_root_mean_square)) + theme(t
 
 ## 4. Break down: No time to die 
 
-I found the necessary statistics from *No time to die (2021)*. As some were hard to find, I assumed the values of Martinis and BJBs.The gross and budget were adjusted to 2013 for consistency:
+I found the necessary statistics from *No time to die (2021)*. As some were hard to find, I assumed the values of Martinis and BJBs. The gross and budget were adjusted to 2013 for consistency:
 
 ```{r breakdown, fig.width = 10, fig.height= 7, out.width='100%'}
 no_time_to_die <- data.frame(2021, "Daniel Craig", 608510000, 214930000, 163, 0, 1, 1, 66, 109, 1, 0)
@@ -189,11 +189,19 @@ pb = predict_parts(explainer = explainer_rf, tail(df, n=1), type= "break_down")
 plot(pb)
 ```
 
-> We can examine the contribution of each feature of our example, the 25th 007 movie. In fact, we are very close to the true average IMDB rating! (https://www.imdb.com/title/tt2382320/, August 2022). 
+Let's examine the contribution of each feature of our example, the 25th 007 movie. What influances the final score the most is the world gross (+), year (+), length (+) and budget (-). My favorite features, introductions and Martinis, are unfortunately not as significant, but they are an advantage (who would have thought!).
 
-Please note that we used a very small dataset.
+>  We are very close to the true average IMDB rating! (https://www.imdb.com/title/tt2382320/, August 2022). 
+
+**Remark:** This is just a toy example with a small dataset and it should be further tested on more examples to asses the model's quality. Though it is definitely not enough to consider the rating of a movie based on the number of drinks consumed or main character's introductions (even if this is Bond, James Bond), I hope this project offers quality entertainment and pleasing visualizations.
+
+From Poland with love,\
+Kacper Dobek\
+https://github.com/kapiblue
 
 ## Resources
+
+Inspiration: https://betaandbit.github.io/RML/
 
 James Bond R dataset https://search.r-project.org/CRAN/refmans/HoRM/html/JamesBond.html
 

@@ -2,10 +2,8 @@ HoRM
 dplyr
 knitr
 DALEX
-h2o
 ggplot2
 lattice
 caret
-corrplot
-plotly
 ggcorrplot
+plotly
