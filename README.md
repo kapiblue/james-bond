@@ -1,6 +1,6 @@
 ## james-bond
 
-This is a small summer project that uses regression to find out the average IMDB rating of the new James Bond movie based on the prevoius movies. Developed in R.
+This is a small summer project that uses regression to find out the average IMDB rating of the new James Bond movie based on the prevoius movies. Developed in R with rmarkdown and a custom CSS.
 
 ## R Packages used
 
