@@ -31,9 +31,9 @@ knitr::include_graphics('resources/007.png')
 
 ## Introduction
 
-> Whether this is a great number or peculiar gadgets or glasses of cold vodka Martni, there are definitely many aspects constituting a great James Bond movie. Having watched *A spy who loved me (1977)* recently I've begun to wonder if that could be somehow assessed by the help of machine learning. This is my small summer data science project that aims to predict the average IMDB score for the newest 007 movie *No time to die* and see what contributes to the score.
+> Whether this is the tour the force, a great number or peculiar gadgets or glasses of cold vodka Martni, there are definitely many aspects that constitute a great James Bond movie. Having watched *A spy who loved me (1977)* recently, I've begun to wonder if that could be somehow figured out with the help of machine learning. This is my small summer data science project that aims to predict the average IMDB score for the newest 007 movie *No time to die* and see what contributes to the score.
 
-> More formally, we will be looking at a regression problem for a small dataset (24 items) and training a random forest using cross validation. Then we will examine the breakdown plot for a previously unseen example - the new movie. I will be using *caret* package for the model and *DALEX* for explanation.
+> More formally, we will be looking at a regression problem for a small dataset (24 items) and training a random forest with cross validation. Then we will examine the break down plot for a previously unseen example - the new movie. I will be using *caret* package for the model and *DALEX* for explanation.
 
 ## 1. The data: For your eyes only
 
@@ -43,7 +43,7 @@ df <- JamesBond %>% select(-US_Gross, -World_Gross, -US_Adj, -Budget, -Avg_User_
   relocate(Avg_User_IMDB, .after = last_col())
 ```
 
-I will be using the James Bond dataset from the HoRM package. [See resources](#Resources)\
+I will be using the James Bond dataset from the HoRM package. [See resources](#resources)\
 Here we have the data of the previous 24 movies. I'm going to use 12 ouf of the 18 available features, namely: `r colnames(df)`.\
 To clear out the feature names:\
 - **World_Adj** The film's 2013-adjusted worldwide gross (in 1000's of U.S. dollars).\
@@ -83,7 +83,7 @@ fig <- plot_ly(plot_df, x = ~Year, y = ~Martinis, type= 'scatter', mode= 'lines+
                marker = list(color = 'rgba(49,130,189, 1)', size = 12),
                hoverinfo = 'text',
                text = ~paste(Movie, Year)) %>%
-  layout(title = "The number of Martini drinks Bond consumed in the movie",
+  layout(title = "Martini drinks Bond consumes in the movie",
          font=list(size = 20),
          margin = m,
          xaxis = list(
@@ -98,22 +98,23 @@ fig <- plot_ly(plot_df, x = ~Year, y = ~Martinis, type= 'scatter', mode= 'lines+
 fig
 ```
 
-
 ```{r kills, fig.width= 12, fig.height= 8}
 
 plot_df <- JamesBond
 plot_df$Movie <- factor (plot_df$Movie , levels = plot_df$Movie) # we want to preserve the dataframe's chronological movie ordering
 
 fig2 <- plot_ly(plot_df, x = ~Year, y = ~Kills_Bond, name = 'By Bond', type= 'scatter', mode= 'lines+markers',
-               line = list(color = 'rgba(102,0,0,1)', width = 4),
-               marker = list(color = 'rgba(102,0,0,1)', size = 12),
+               line = list(color = 'rgba(166,4,4,1)', width = 4),
+               marker = list(color = 'rgba(166,4,4,1)', size = 12),
                hoverinfo = 'text',
-               text = ~paste(Movie, Year)) %>%
+               text = ~paste(Movie, Year, "<br>Kills:", Kills_Bond)) %>%
   add_trace(y = ~Kills_Others,  type = 'scatter', mode= 'lines+markers',
                name = "By Others",
-               line = list(color = 'middle gray', width = 4),
-               marker = list(color = 'middle gray', size = 12)) %>%
-  layout(title = "The number of kills",
+               line = list(color = 'rgba(192,172,182,1)', width = 4),
+               marker = list(color = 'rgba(192,172,182,1)', size = 12),
+               hoverinfo = 'text',
+               text = ~paste(Movie, Year, "<br>Kills:", Kills_Others)) %>%
+  layout(title = "Kills in 007 movies",
          font=list(size = 20),
          margin = m,
          xaxis = list(
@@ -192,7 +193,7 @@ plot(pb)
 
 Please note that we used a very small dataset.
 
-## 5. Resources
+## Resources
 
 James Bond R dataset https://search.r-project.org/CRAN/refmans/HoRM/html/JamesBond.html
 
